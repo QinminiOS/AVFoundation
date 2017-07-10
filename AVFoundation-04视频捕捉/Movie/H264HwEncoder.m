@@ -35,29 +35,25 @@ static void didCompressH264(void *outputCallbackRefCon,
     }
     H264HwEncoder* encoder = (__bridge H264HwEncoder*)outputCallbackRefCon;
     
-    // Check if we have got a key frame first
+    // 检查是否为关键帧
     bool keyframe = !CFDictionaryContainsKey( (CFArrayGetValueAtIndex(CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, true), 0)), kCMSampleAttachmentKey_NotSync);
     
     if (keyframe)
     {
         CMFormatDescriptionRef format = CMSampleBufferGetFormatDescription(sampleBuffer);
-        // CFDictionaryRef extensionDict = CMFormatDescriptionGetExtensions(format);
-        // Get the extensions
-        // From the extensions get the dictionary with key "SampleDescriptionExtensionAtoms"
-        // From the dict, get the value for the key "avcC"
         
         size_t sparameterSetSize, sparameterSetCount;
         const uint8_t *sparameterSet;
         OSStatus statusCode = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format, 0, &sparameterSet, &sparameterSetSize, &sparameterSetCount, 0 );
         if (statusCode == noErr)
         {
-            // Found sps and now check for pps
+            // 获取 sps
             size_t pparameterSetSize, pparameterSetCount;
             const uint8_t *pparameterSet;
             OSStatus statusCode = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format, 1, &pparameterSet, &pparameterSetSize, &pparameterSetCount, 0 );
             if (statusCode == noErr)
             {
-                // Found pps
+                // 获取 pps
                 NSData *sps = [NSData dataWithBytes:sparameterSet length:sparameterSetSize];
                 NSData *pps = [NSData dataWithBytes:pparameterSet length:pparameterSetSize];
                 if (encoder->_delegate)
@@ -68,6 +64,7 @@ static void didCompressH264(void *outputCallbackRefCon,
         }
     }
     
+    // 获取其它视频帧
     CMBlockBufferRef dataBuffer = CMSampleBufferGetDataBuffer(sampleBuffer);
     size_t length, totalLength;
     char *dataPointer;
@@ -76,9 +73,10 @@ static void didCompressH264(void *outputCallbackRefCon,
         
         size_t bufferOffset = 0;
         static const int AVCCHeaderLength = 4;
+        // 一般情况下都是只有1帧，在最开始编码的时候有2帧，取最后一帧
         while (bufferOffset < totalLength - AVCCHeaderLength) {
             
-            // Read the NAL unit length
+            // 获取 NAL unit 数据长度
             uint32_t NALUnitLength = 0;
             memcpy(&NALUnitLength, dataPointer + bufferOffset, AVCCHeaderLength);
             
@@ -86,9 +84,11 @@ static void didCompressH264(void *outputCallbackRefCon,
             NALUnitLength = CFSwapInt32BigToHost(NALUnitLength);
             
             NSData* data = [[NSData alloc] initWithBytes:(dataPointer + bufferOffset + AVCCHeaderLength) length:NALUnitLength];
+            
+            // 如果保存到文件中，需要将此数据前加上 [0 0 0 1] 4个字节，按顺序写入到h264文件中。
             [encoder->_delegate gotEncodedData:data isKeyFrame:keyframe starCode:NO];
             
-            // Move to the next NAL unit in the block buffer
+            // 转到下一个 NAL unit
             bufferOffset += AVCCHeaderLength + NALUnitLength;
         }
         
@@ -102,9 +102,8 @@ static void didCompressH264(void *outputCallbackRefCon,
     
     dispatch_sync(_videoQueue, ^{
         
-        // For testing out the logic, lets read from a file and then send it to encoder to create h264 stream
-        
-        // Create the compression session
+        // 编码类型：kCMVideoCodecType_H264
+        // 编码回调：didCompressH264，这个回调函数为编码结果回调，编码成功后，会将数据传入此回调中。
         OSStatus status = VTCompressionSessionCreate(NULL,
                                                      width,
                                                      height,
@@ -118,17 +117,27 @@ static void didCompressH264(void *outputCallbackRefCon,
         
         NSLog(@"H264: VTCompressionSessionCreate %d", (int)status);
         
-        if (status != 0)
+        if (status != noErr)
         {
             NSLog(@"H264: Unable to create a H264 session");
             return ;
             
         }
         
-        // Set the properties
+        // 设置实时编码
         VTSessionSetProperty(EncodingSession, kVTCompressionPropertyKey_RealTime, kCFBooleanTrue);
+        
+        // ProfileLevel，h264的协议等级，不同的清晰度使用不同的ProfileLevel。
         VTSessionSetProperty(EncodingSession, kVTCompressionPropertyKey_ProfileLevel, kVTProfileLevel_H264_Main_AutoLevel);
         
+        // 设置码率
+        VTSessionSetProperty(EncodingSession, kVTCompressionPropertyKey_AverageBitRate, (__bridge CFTypeRef)@(width * height * 3));
+        
+        // 关闭重排Frame，因为有了B帧（双向预测帧，根据前后的图像计算出本帧）后，编码顺序可能跟显示顺序不同。此参数可以关闭B帧
+        VTSessionSetProperty(EncodingSession, kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanFalse);
+        
+        // 关键帧最大间隔，关键帧也就是I帧。此处表示关键帧最大间隔为2s。
+        VTSessionSetProperty(EncodingSession, kVTCompressionPropertyKey_MaxKeyFrameInterval, (__bridge CFTypeRef)@(25 * 2));
         
         // Tell the encoder to start encoding
         VTCompressionSessionPrepareToEncodeFrames(EncodingSession);
@@ -140,21 +149,20 @@ static void didCompressH264(void *outputCallbackRefCon,
     dispatch_sync(_videoQueue, ^{
         
         _frameCount++;
-        // Get the CV Image buffer
+        // 获取 CVImageBufferRef
         CVImageBufferRef imageBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
         
-        // Create properties
+        // 设置 pts
         CMTime presentationTimeStamp = CMTimeMake(_frameCount, 1000);
-        //CMTime duration = CMTimeMake(1, DURATION);
-        VTEncodeInfoFlags flags;
         
-        // Pass it to the encoder
+        VTEncodeInfoFlags flags;
+        // 编码
         OSStatus statusCode = VTCompressionSessionEncodeFrame(EncodingSession,
                                                               imageBuffer,
                                                               presentationTimeStamp,
                                                               kCMTimeInvalid,
                                                               NULL, NULL, &flags);
-        // Check for error
+        // 错误处理
         if (statusCode != noErr) {
             NSLog(@"H264: VTCompressionSessionEncodeFrame failed with %d", (int)statusCode);
             
@@ -169,7 +177,7 @@ static void didCompressH264(void *outputCallbackRefCon,
     
 }
 
-- (void)finish
+- (void)destroy
 {
     // Mark the completion
     VTCompressionSessionCompleteFrames(EncodingSession, kCMTimeInvalid);

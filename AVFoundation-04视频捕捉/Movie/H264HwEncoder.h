@@ -19,7 +19,7 @@
 
 - (void)setupEncoder:(int)width height:(int)height;
 - (void)encodeBuffer:(CMSampleBufferRef)sampleBuffer;
-- (void)finish;
+- (void)destroy;
 
 - (void)startWithYUVFile:(NSString *)yuvFile width:(int)width height:(int)height;
 @end
