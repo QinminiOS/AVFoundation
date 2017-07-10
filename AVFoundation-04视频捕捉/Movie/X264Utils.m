@@ -138,10 +138,6 @@
         }
     }
     
-    // free
-    free(pNals);
-    pNals = NULL;
-    
     // Unlock
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
 }
