@@ -43,7 +43,7 @@
     if (!error && [self.captureSession canAddInput:input]) {
         [self.captureSession addInput:input];
     }
-    
+
     // Output
     self.audioDataOutput = [[AVCaptureAudioDataOutput alloc] init];
     [self.audioDataOutput setSampleBufferDelegate:self queue:dispatch_get_global_queue(0, 0)];
