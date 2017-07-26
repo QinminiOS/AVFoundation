@@ -9,6 +9,7 @@
 #import "QMPreviewView.h"
 #import <AVFoundation/AVFoundation.h>
 
+// 角度转弧度
 #define DegreeToRadius(degree) (((degree)/(180.0f)) * (M_PI))
 
 @interface QMPreviewView()
@@ -18,6 +19,7 @@
 
 @implementation QMPreviewView
 
+// 透视投影
 static CATransform3D PerspectiveTransformMake(CGFloat eyePosition)
 {
     CATransform3D transform = CATransform3DIdentity;
@@ -112,15 +114,17 @@ static CATransform3D PerspectiveTransformMake(CGFloat eyePosition)
 
 - (void)onDetectFaces:(NSArray *)faces
 {
+    // 坐标变换
     NSArray *transFaces = [self transformFacesToLayerFromFaces:faces];
     NSMutableArray *missFaces = [[self.faceLayerDict allKeys] mutableCopy];
     
     for (AVMetadataFaceObject *face in transFaces) {
         NSNumber *faceID = @(face.faceID);
+        // 如果当前人脸还在镜头里，则不用移除
         [missFaces removeObject:faceID];
         
         CALayer *layer = self.faceLayerDict[faceID];
-        if (!layer) {
+        if (!layer) {  // 生成新的人脸矩形
             layer = [self makeLayer];
             self.faceLayerDict[faceID] = layer;
             [self.overlayLayer addSublayer:layer];
@@ -129,18 +133,19 @@ static CATransform3D PerspectiveTransformMake(CGFloat eyePosition)
         layer.transform = CATransform3DIdentity;
         layer.frame = face.bounds;
         
+        // 根据偏转角，对矩形进行旋转
         if (face.hasRollAngle) {
             CATransform3D t = CATransform3DMakeRotation(DegreeToRadius(face.rollAngle), 0, 0, 1.0);
             layer.transform = CATransform3DConcat(layer.transform, t);
         }
-        
+        // 根据斜倾角，对矩形进行旋转变换
         if (face.hasYawAngle) {
             CATransform3D t = [self transformFromYawAngle:face.yawAngle];
             layer.transform = CATransform3DConcat(layer.transform, t);
         }
         
     }
-    
+    // 去除离开屏幕的人脸和矩形视图变换
     for (NSNumber *faceID in missFaces) {
         CALayer *layer = self.faceLayerDict[faceID];
         [layer removeFromSuperlayer];
