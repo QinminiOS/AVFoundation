@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import "QMPreviewView.h"
 
 #define kDocumentPath(path) [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:path]
 
@@ -15,6 +16,7 @@
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic, strong) AVCaptureMetadataOutput *metaDataOutput;
+@property (nonatomic, assign) QMPreviewView *previewView;
 @end
 
 @implementation ViewController
@@ -23,7 +25,15 @@
 {
     [super viewDidLoad];
     
+    [self setupView];
     [self setupSession];
+}
+
+- (void)setupView
+{
+    QMPreviewView *previewView = [[QMPreviewView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:previewView];
+    _previewView = previewView;
 }
 
 - (void)setupSession
@@ -32,6 +42,7 @@
     
     self.captureSession = [[AVCaptureSession alloc] init];
     [self.captureSession setSessionPreset:AVCaptureSessionPreset640x480];
+    [self.previewView setSession:self.captureSession];
     
     // Create a device input with the device and add it to the session.
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -48,22 +59,18 @@
     self.videoDataOutput.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
     [self.captureSession addOutput:self.videoDataOutput];
     
-    AVCaptureVideoPreviewLayer *previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
-    previewLayer.frame = [UIScreen mainScreen].bounds;
-    [self.view.layer addSublayer:previewLayer];
-    
     // Output
     self.metaDataOutput = [[AVCaptureMetadataOutput alloc] init];
-    
+
     [self.metaDataOutput setMetadataObjectsDelegate:self queue:dispatch_get_global_queue(0, 0)];
     if ([self.captureSession canAddOutput:self.metaDataOutput]) {
         [self.captureSession addOutput:self.metaDataOutput];
     }
-    
+
     for (NSString *metaType in self.metaDataOutput.availableMetadataObjectTypes) {
         NSLog(@"%@", metaType);
     }
-    
+
     self.metaDataOutput.metadataObjectTypes = @[AVMetadataObjectTypeFace];
     
     [self.captureSession startRunning];
@@ -79,9 +86,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
-    for (AVMetadataFaceObject *face in metadataObjects) {
-        NSLog(@"face = %ld, bounds = %@", face.faceID, NSStringFromCGRect(face.bounds));
-    }
+//    for (AVMetadataFaceObject *face in metadataObjects) {
+//        NSLog(@"face = %ld, bounds = %@", face.faceID, NSStringFromCGRect(face.bounds));
+//    }
+    
+    [self.previewView onDetectFaces:metadataObjects];
 }
 
 @end

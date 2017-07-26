@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface QMPreviewView : UIView
+
+- (void)setSession:(AVCaptureSession *)session;
+
+- (void)onDetectFaces:(NSArray *)faces;
 
 @end
