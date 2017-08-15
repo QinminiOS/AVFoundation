@@ -90,7 +90,8 @@
             [self setTorchModel:[self currentTorchMode] == AVCaptureTorchModeOn ? AVCaptureTorchModeOff : AVCaptureTorchModeOn];
             break;
         case 3: {
-                [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:nil completionHandler:^(CMSampleBufferRef  _Nullable imageDataSampleBuffer, NSError * _Nullable error) {
+            AVCaptureConnection *conn = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+                [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:conn completionHandler:^(CMSampleBufferRef  _Nullable imageDataSampleBuffer, NSError * _Nullable error) {
                     NSData *data = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
                     [self writeImageToPhotosAlbum:[UIImage imageWithData:data]];
                 }];
