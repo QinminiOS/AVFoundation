@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13178.6" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13156.2"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rft-EZ-DXx">
+                                <rect key="frame" x="16" y="530" width="77" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="cJi-gP-EwU"/>
+                                </constraints>
+                                <state key="normal" title="切换摄像头"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="EDm-MK-fFN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iwF-4l-FBy">
+                                <rect key="frame" x="129" y="530" width="62" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="5vO-pi-Kbi"/>
+                                </constraints>
+                                <state key="normal" title="自动对焦"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BM8-1X-foN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rQ4-Jn-msO">
+                                <rect key="frame" x="273" y="530" width="31" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="jgw-La-Jbd"/>
+                                </constraints>
+                                <state key="normal" title="曝光"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Bk-nM-80M"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ws9-Nf-CR2">
+                                <rect key="frame" x="137" y="22" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="dBs-7h-Car"/>
+                                </constraints>
+                                <state key="normal" title="手电筒"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Sxj-R9-ETb"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JKs-S8-etl">
+                                <rect key="frame" x="242" y="22" width="62" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="KGd-N4-Q8l"/>
+                                </constraints>
+                                <state key="normal" title="保存图片"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="enJ-pw-OdY"/>
+                                </connections>
+                            </button>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Jvi-xz-GSX">
+                                <rect key="frame" x="24" y="500" width="272" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="29" id="vBv-zk-MtE"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderValueChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="Mat-uN-Xfi"/>
+                                </connections>
+                            </slider>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q3s-Xd-aiQ">
+                                <rect key="frame" x="16" y="22" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="fdb-iH-qOb"/>
+                                </constraints>
+                                <state key="normal" title="闪光灯"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4WS-Sf-Cfx"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="rft-EZ-DXx" firstAttribute="top" secondItem="Jvi-xz-GSX" secondAttribute="bottom" constant="1" id="0CU-gR-rPZ"/>
+                            <constraint firstItem="Q3s-Xd-aiQ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="2sw-S3-2nM"/>
+                            <constraint firstItem="iwF-4l-FBy" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ad9-ph-wgO"/>
+                            <constraint firstItem="JKs-S8-etl" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="2" id="BhK-9c-XsW"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="iwF-4l-FBy" secondAttribute="bottom" constant="8" id="IFd-8b-u5O"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Jvi-xz-GSX" secondAttribute="trailing" constant="10" id="LKC-2z-RPf"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="rft-EZ-DXx" secondAttribute="bottom" constant="8" id="TbP-zT-H0R"/>
+                            <constraint firstItem="rQ4-Jn-msO" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="TeI-b2-lGD"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Q3s-Xd-aiQ" secondAttribute="trailingMargin" id="VYc-oW-dQY"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rft-EZ-DXx" secondAttribute="trailingMargin" id="Wni-Xa-qvT"/>
+                            <constraint firstItem="JKs-S8-etl" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="aXy-r4-uuf"/>
+                            <constraint firstItem="Ws9-Nf-CR2" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="aZf-nk-ECm"/>
+                            <constraint firstItem="JKs-S8-etl" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="chx-jc-azT"/>
+                            <constraint firstItem="rft-EZ-DXx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="fXf-f0-hwh"/>
+                            <constraint firstItem="rQ4-Jn-msO" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="gjg-XH-MXJ"/>
+                            <constraint firstItem="Ws9-Nf-CR2" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="2" id="gvk-Fr-1e3"/>
+                            <constraint firstItem="Jvi-xz-GSX" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="gyJ-6y-Ebk"/>
+                            <constraint firstItem="Jvi-xz-GSX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="10" id="hZd-oN-ULu"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="rQ4-Jn-msO" secondAttribute="bottom" constant="8" id="hqa-5s-bBk"/>
+                            <constraint firstItem="Q3s-Xd-aiQ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="2" id="vJk-vv-bhL"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-826.39999999999998" y="64.31784107946028"/>
+        </scene>
+    </scenes>
+</document>
