@@ -15,13 +15,8 @@
 		04F37C4A1EF8AC7B00800107 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04F37C481EF8AC7B00800107 /* LaunchScreen.storyboard */; };
 		04F37C551EF8AC7B00800107 /* AVFoundationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F37C541EF8AC7B00800107 /* AVFoundationTests.m */; };
 		04F37C601EF8AC7B00800107 /* AVFoundationUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F37C5F1EF8AC7B00800107 /* AVFoundationUITests.m */; };
-		B943FA6B1F42AA44001DEC30 /* OpenGLESView.m in Sources */ = {isa = PBXBuildFile; fileRef = B943FA6A1F42AA44001DEC30 /* OpenGLESView.m */; };
-		B943FA6F1F42AAB0001DEC30 /* GLUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = B943FA6D1F42AA74001DEC30 /* GLUtil.c */; };
-		B943FA701F42CDF0001DEC30 /* vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B943FA691F42AA44001DEC30 /* vert.glsl */; };
-		B943FA711F42CDF4001DEC30 /* frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B943FA681F42AA44001DEC30 /* frag.glsl */; };
-		B943FA811F42DCA1001DEC30 /* flower.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B943FA801F42DC75001DEC30 /* flower.jpg */; };
-		B943FA831F42E456001DEC30 /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B943FA821F42E44C001DEC30 /* 1.jpg */; };
-		B943FA851F42E728001DEC30 /* wood.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B943FA841F42E71F001DEC30 /* wood.jpg */; };
+		B9CD44781F4688E900A40256 /* 1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B9CD44771F4688E000A40256 /* 1.mp4 */; };
+		B9CD447A1F4689DE00A40256 /* 许嵩-素颜.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9CD44791F4689DA00A40256 /* 许嵩-素颜.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,15 +53,8 @@
 		04F37C5B1EF8AC7B00800107 /* AVFoundationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AVFoundationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		04F37C5F1EF8AC7B00800107 /* AVFoundationUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVFoundationUITests.m; sourceTree = "<group>"; };
 		04F37C611EF8AC7B00800107 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B943FA661F42AA44001DEC30 /* OpenGLESView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLESView.h; sourceTree = "<group>"; };
-		B943FA681F42AA44001DEC30 /* frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = frag.glsl; sourceTree = "<group>"; };
-		B943FA691F42AA44001DEC30 /* vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vert.glsl; sourceTree = "<group>"; };
-		B943FA6A1F42AA44001DEC30 /* OpenGLESView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenGLESView.m; sourceTree = "<group>"; };
-		B943FA6D1F42AA74001DEC30 /* GLUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = GLUtil.c; sourceTree = "<group>"; };
-		B943FA6E1F42AA74001DEC30 /* GLUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GLUtil.h; sourceTree = "<group>"; };
-		B943FA801F42DC75001DEC30 /* flower.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = flower.jpg; sourceTree = "<group>"; };
-		B943FA821F42E44C001DEC30 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
-		B943FA841F42E71F001DEC30 /* wood.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wood.jpg; sourceTree = "<group>"; };
+		B9CD44771F4688E000A40256 /* 1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = 1.mp4; sourceTree = "<group>"; };
+		B9CD44791F4689DA00A40256 /* 许嵩-素颜.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "许嵩-素颜.mp3"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,21 +105,16 @@
 		04F37C391EF8AC7B00800107 /* AVFoundation */ = {
 			isa = PBXGroup;
 			children = (
-				B943FA6C1F42AA74001DEC30 /* Utils */,
-				B943FA671F42AA44001DEC30 /* Shader */,
 				04F37C3D1EF8AC7B00800107 /* AppDelegate.h */,
 				04F37C3E1EF8AC7B00800107 /* AppDelegate.m */,
 				04F37C401EF8AC7B00800107 /* ViewController.h */,
 				04F37C411EF8AC7B00800107 /* ViewController.m */,
-				B943FA661F42AA44001DEC30 /* OpenGLESView.h */,
-				B943FA6A1F42AA44001DEC30 /* OpenGLESView.m */,
 				04F37C431EF8AC7B00800107 /* Main.storyboard */,
 				04F37C461EF8AC7B00800107 /* Assets.xcassets */,
 				04F37C481EF8AC7B00800107 /* LaunchScreen.storyboard */,
 				04F37C4B1EF8AC7B00800107 /* Info.plist */,
-				B943FA821F42E44C001DEC30 /* 1.jpg */,
-				B943FA841F42E71F001DEC30 /* wood.jpg */,
-				B943FA801F42DC75001DEC30 /* flower.jpg */,
+				B9CD44771F4688E000A40256 /* 1.mp4 */,
+				B9CD44791F4689DA00A40256 /* 许嵩-素颜.mp3 */,
 				04F37C3A1EF8AC7B00800107 /* Supporting Files */,
 			);
 			path = AVFoundation;
@@ -161,24 +144,6 @@
 				04F37C611EF8AC7B00800107 /* Info.plist */,
 			);
 			path = AVFoundationUITests;
-			sourceTree = "<group>";
-		};
-		B943FA671F42AA44001DEC30 /* Shader */ = {
-			isa = PBXGroup;
-			children = (
-				B943FA691F42AA44001DEC30 /* vert.glsl */,
-				B943FA681F42AA44001DEC30 /* frag.glsl */,
-			);
-			path = Shader;
-			sourceTree = "<group>";
-		};
-		B943FA6C1F42AA74001DEC30 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				B943FA6D1F42AA74001DEC30 /* GLUtil.c */,
-				B943FA6E1F42AA74001DEC30 /* GLUtil.h */,
-			);
-			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -293,11 +258,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B943FA851F42E728001DEC30 /* wood.jpg in Resources */,
-				B943FA831F42E456001DEC30 /* 1.jpg in Resources */,
-				B943FA811F42DCA1001DEC30 /* flower.jpg in Resources */,
-				B943FA711F42CDF4001DEC30 /* frag.glsl in Resources */,
-				B943FA701F42CDF0001DEC30 /* vert.glsl in Resources */,
+				B9CD447A1F4689DE00A40256 /* 许嵩-素颜.mp3 in Resources */,
+				B9CD44781F4688E900A40256 /* 1.mp4 in Resources */,
 				04F37C4A1EF8AC7B00800107 /* LaunchScreen.storyboard in Resources */,
 				04F37C471EF8AC7B00800107 /* Assets.xcassets in Resources */,
 				04F37C451EF8AC7B00800107 /* Main.storyboard in Resources */,
@@ -325,9 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B943FA6F1F42AAB0001DEC30 /* GLUtil.c in Sources */,
 				04F37C421EF8AC7B00800107 /* ViewController.m in Sources */,
-				B943FA6B1F42AA44001DEC30 /* OpenGLESView.m in Sources */,
 				04F37C3F1EF8AC7B00800107 /* AppDelegate.m in Sources */,
 				04F37C3C1EF8AC7B00800107 /* main.m in Sources */,
 			);
