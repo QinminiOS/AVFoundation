@@ -73,8 +73,8 @@ static void *ExportContext;
 - (void)buildComposition
 {
     self.composition = [AVMutableComposition composition];
-    self.videoTrack = [_composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    self.audioTrack = [_composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    self.videoTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    self.audioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
 }
 
 - (void)addVideo:(AVAsset *)videoAssets toTimeRange:(CMTimeRange)range atTime:(CMTime)time
@@ -93,15 +93,26 @@ static void *ExportContext;
     NSLog(@"%@", @"add audio finish");
 }
 
+- (AVAudioMix *)audioMix
+{
+    AVMutableAudioMixInputParameters *params = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:self.audioTrack];
+    [params setVolume:0.5f atTime:kCMTimeZero];
+    [params setVolumeRampFromStartVolume:0.1f toEndVolume:0.9f timeRange:CMTimeRangeFromTimeToTime(CMTimeMake(3.0f, 1.0f), CMTimeMake(6.0f, 1.0f))];
+    
+    AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+    audioMix.inputParameters = @[params];
+    
+    return [audioMix copy];
+}
+
 - (void)export
 {
     AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:[self.composition copy] presetName:AVAssetExportPresetHighestQuality];
     session.outputURL = [NSURL fileURLWithPath:kOutputFile];
     session.outputFileType = AVFileTypeMPEG4;
+    session.audioMix = [self audioMix];
     NSLog(@"%@", kOutputFile);
-    
-    [session addObserver:self forKeyPath:@"progress" options:NSKeyValueObservingOptionNew context:&ExportContext];
-    
+
     [session exportAsynchronouslyWithCompletionHandler:^{
         if (!session.error) {
             NSLog(@"%@", @"finish export");
@@ -118,13 +129,6 @@ static void *ExportContext;
     avPlayer.player = [[AVPlayer alloc] initWithURL:videoURL];
     avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
     [self presentViewController:avPlayer animated:YES completion:nil];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if (context == &ExportContext) {
-        NSLog(@"%@", change);
-    }
 }
 
 @end
