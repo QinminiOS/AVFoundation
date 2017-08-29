@@ -24,16 +24,17 @@
 {
     [super viewDidLoad];
     
-    _mediaWriter = [[QMMediaWriter alloc] initWithOutputURL:[NSURL fileURLWithPath:kDocumentPath(@"1.mp4")] size:CGSizeMake(1280, 720)];
-    _mediaReader = [[QMMediaReader alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"1" withExtension:@"mp4"]];
-    
     NSLog(@"%@", kDocumentPath(@""));
+    [[NSFileManager defaultManager] removeItemAtPath:kDocumentPath(@"1.mp4") error:nil];
     
+    _mediaWriter = [[QMMediaWriter alloc] initWithOutputURL:[NSURL fileURLWithPath:kDocumentPath(@"1.mp4")] size:CGSizeMake(640, 360)];
+    _mediaReader = [[QMMediaReader alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"1" withExtension:@"mp4"]];
+
     __weak typeof(self) weakSelf = self;
     [_mediaReader setVideoReaderCallback:^(CMSampleBufferRef videoBuffer) {
         [weakSelf.mediaWriter processVideoBuffer:videoBuffer];
     }];
-    
+
     [_mediaReader setAudioReaderCallback:^(CMSampleBufferRef audioBuffer) {
         [weakSelf.mediaWriter processAudioBuffer:audioBuffer];
     }];
@@ -42,15 +43,8 @@
         NSLog(@"==finish===");
         [weakSelf.mediaWriter finishWriting];
     }];
-    
-    [_mediaReader startProcessing];
-}
 
-- (IBAction)buttonTapped:(UIButton *)sender
-{
-    if (sender.tag == 1) {
-       
-    }
+    [_mediaReader startProcessing];
 }
 
 @end

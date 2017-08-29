@@ -15,7 +15,6 @@
 @property (nonatomic, strong) AVAssetWriterInput *assetWriterVideoInput;
 @property (nonatomic, strong) AVAssetWriterInputPixelBufferAdaptor *assetWriterPixelBufferInput;
 @property (nonatomic, assign) BOOL encodingLiveVideo;
-@property (nonatomic, assign) CGFloat frameRate;
 @property (nonatomic, assign) CGSize videoSize;
 @property (nonatomic, assign) CMTime startTime;
 @end
@@ -31,7 +30,6 @@
 {
     if (self = [super init]) {
         _videoSize = newSize;
-        _frameRate = 25.0f;
         _startTime = kCMTimeInvalid;
         _encodingLiveVideo = YES;
         
@@ -56,18 +54,16 @@
 
 - (void)buildVideoWriter
 {
-    NSDictionary *dict = @{ AVVideoWidthKey:@(_videoSize.width),
-                            AVVideoHeightKey:@(_videoSize.height),
-                            AVVideoCodecKey:AVVideoCodecH264,
-//                            AVVideoProfileLevelKey:AVVideoProfileLevelH264BaselineAutoLevel,
-//                            AVVideoExpectedSourceFrameRateKey:@(_frameRate),
-//                            AVVideoAverageBitRateKey:@(2000000)
-                            };
+    NSDictionary *dict = @{
+                           AVVideoWidthKey:@(_videoSize.width),
+                           AVVideoHeightKey:@(_videoSize.height),
+                           AVVideoCodecKey:AVVideoCodecH264
+                           };
     self.assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:dict];
     self.assetWriterVideoInput.expectsMediaDataInRealTime = _encodingLiveVideo;
     
     NSDictionary *attributesDictionary = @{
-                                           (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange),
+                                           (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
                                            (id)kCVPixelBufferWidthKey : @(_videoSize.width),
                                            (id)kCVPixelBufferHeightKey : @(_videoSize.height)
                                            };
@@ -79,16 +75,10 @@
 
 - (void)buildAudioWriter
 {
-    AudioChannelLayout acl;
-    bzero( &acl, sizeof(acl));
-    acl.mChannelLayoutTag = kAudioChannelLayoutTag_Mono;
-    
     NSDictionary *audioOutputSettings = @{
-                                          AVChannelLayoutKey : [NSData dataWithBytes:&acl length:sizeof(acl)],
                                           AVFormatIDKey : @(kAudioFormatMPEG4AAC),
-                                          AVNumberOfChannelsKey : @(1),
+                                          AVNumberOfChannelsKey : @(2),
                                           AVSampleRateKey : @(48000),
-                                          AVEncoderBitRateKey : @(640000)
                                           };
     
     self.assetWriterAudioInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio outputSettings:audioOutputSettings];
@@ -100,6 +90,10 @@
 #pragma mark - AudioBuffer
 - (void)processVideoBuffer:(CMSampleBufferRef)videoBuffer
 {
+    if (!CMSampleBufferIsValid(videoBuffer)) {
+        return;
+    }
+    
     CFRetain(videoBuffer);
     CMTime currentSampleTime = CMSampleBufferGetOutputPresentationTimeStamp(videoBuffer);
     
@@ -119,20 +113,18 @@
         [[NSRunLoop currentRunLoop] runUntilDate:maxDate];
     }
     
-    NSLog(@"-------> %d %@", self.assetWriter.status, [self.assetWriter.error localizedDescription]);
+    NSLog(@"video => %ld %@", (long)self.assetWriter.status, [self.assetWriter.error localizedDescription]);
     
     if (!self.assetWriterVideoInput.readyForMoreMediaData) {
-        NSLog(@"2: Had to drop a video frame %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
+        NSLog(@"had to drop a video frame");
         
     } else if(self.assetWriter.status == AVAssetWriterStatusWriting) {
-        CVPixelBufferRef pixel_buffer = NULL;
-        CVPixelBufferLockBaseAddress(pixel_buffer, 0);
-        if (![self.assetWriterPixelBufferInput appendPixelBuffer:pixel_buffer withPresentationTime:currentSampleTime])
-            
-            NSLog(@"Problem appending pixel buffer at time: %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
+        CVImageBufferRef cvimgRef = CMSampleBufferGetImageBuffer(videoBuffer);
+        if (![self.assetWriterPixelBufferInput appendPixelBuffer:cvimgRef withPresentationTime:currentSampleTime]) {
+            NSLog(@"appending pixel fail");
+        }
     } else {
-        NSLog(@"Couldn't write a frame");
-        //NSLog(@"Wrote a video frame: %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
+        NSLog(@"write frame fail");
     }
     
     CFRelease(videoBuffer);
@@ -140,9 +132,13 @@
 
 - (void)processAudioBuffer:(CMSampleBufferRef)audioBuffer;
 {
-    CFRetain(audioBuffer);
+    if (!CMSampleBufferIsValid(audioBuffer)) {
+        return;
+    }
     
+    CFRetain(audioBuffer);
     CMTime currentSampleTime = CMSampleBufferGetOutputPresentationTimeStamp(audioBuffer);
+    
     if (CMTIME_IS_INVALID(_startTime))
     {
         if (self.assetWriter.status != AVAssetWriterStatusWriting)
@@ -154,6 +150,7 @@
         _startTime = currentSampleTime;
     }
     
+    NSLog(@"audio => %ld %@", (long)self.assetWriter.status, [self.assetWriter.error localizedDescription]);
     
     while(!self.assetWriterAudioInput.readyForMoreMediaData && ! _encodingLiveVideo) {
         NSDate *maxDate = [NSDate dateWithTimeIntervalSinceNow:0.5];
@@ -161,17 +158,15 @@
     }
     
     if (!self.assetWriterAudioInput.readyForMoreMediaData) {
-        NSLog(@"2: Had to drop an audio frame %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
-    
+        NSLog(@"had to drop an audio frame");
     } else if(self.assetWriter.status == AVAssetWriterStatusWriting) {
-        if (![self.assetWriterAudioInput appendSampleBuffer:audioBuffer])
-            NSLog(@"Problem appending audio buffer at time: %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
-    
+        if (![self.assetWriterAudioInput appendSampleBuffer:audioBuffer]) {
+           NSLog(@"appending audio buffer fail");
+        }
     } else {
-        NSLog(@"Wrote an audio frame %@", CFBridgingRelease(CMTimeCopyDescription(kCFAllocatorDefault, currentSampleTime)));
+        NSLog(@"write audio frame fail");
     }
     
-    CMSampleBufferInvalidate(audioBuffer);
     CFRelease(audioBuffer);
 }
 

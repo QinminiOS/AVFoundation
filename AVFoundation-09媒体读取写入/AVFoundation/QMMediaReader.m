@@ -77,22 +77,31 @@
     NSError *error = nil;
     AVAssetReader *assetReader = [AVAssetReader assetReaderWithAsset:self.asset error:&error];
     
-    NSDictionary *outputSettings = @{
-                                     (id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
-                                     };
-    AVAssetReaderTrackOutput *readerVideoTrackOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:[[self.asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] outputSettings:outputSettings];
-    readerVideoTrackOutput.alwaysCopiesSampleData = NO;
-    [assetReader addOutput:readerVideoTrackOutput];
+    // Video
+    NSArray *videoTracks = [self.asset tracksWithMediaType:AVMediaTypeVideo];
+    BOOL shouldRecordVideoTrack = [videoTracks count] > 0;
+    AVAssetReaderTrackOutput *readerVideoTrackOutput = nil;
+    if (shouldRecordVideoTrack) {
+        AVAssetTrack* videoTrack = [videoTracks firstObject];
+        NSDictionary *outputSettings = @{
+                                         (id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_32BGRA)
+                                         };
+        readerVideoTrackOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:videoTrack outputSettings:outputSettings];
+        readerVideoTrackOutput.alwaysCopiesSampleData = NO;
+        [assetReader addOutput:readerVideoTrackOutput];
+    }
     
+    // Audio
     NSArray *audioTracks = [self.asset tracksWithMediaType:AVMediaTypeAudio];
     BOOL shouldRecordAudioTrack = [audioTracks count] > 0;
     AVAssetReaderTrackOutput *readerAudioTrackOutput = nil;
     
     if (shouldRecordAudioTrack)
     {
-        AVAssetTrack* audioTrack = [audioTracks objectAtIndex:0];
+        AVAssetTrack* audioTrack = [audioTracks firstObject];
         NSDictionary *audioOutputSetting = @{
-                                             AVFormatIDKey : @(kAudioFormatLinearPCM)
+                                             AVFormatIDKey : @(kAudioFormatLinearPCM),
+                                             AVNumberOfChannelsKey : @(2),
                                              };
 
         readerAudioTrackOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:audioTrack outputSettings:audioOutputSetting];
@@ -113,20 +122,20 @@
     for( AVAssetReaderOutput *output in self.reader.outputs ) {
         if( [output.mediaType isEqualToString:AVMediaTypeAudio] ) {
             readerAudioTrackOutput = output;
-        }
-        else if( [output.mediaType isEqualToString:AVMediaTypeVideo] ) {
+        }else if( [output.mediaType isEqualToString:AVMediaTypeVideo] ) {
             readerVideoTrackOutput = output;
         }
     }
     
-    if ([self.reader startReading] == NO)
-    {
+    if ([self.reader startReading] == NO) {
         NSLog(@"Error reading from file at URL: %@", self.url);
         return;
     }
     
     while (self.reader.status == AVAssetReaderStatusReading ) {
-        [self readNextVideoFrameFromOutput:readerVideoTrackOutput];
+        if (readerVideoTrackOutput) {
+            [self readNextVideoFrameFromOutput:readerVideoTrackOutput];
+        }
         
         if (readerAudioTrackOutput) {
             [self readNextAudioSampleFromOutput:readerAudioTrackOutput];

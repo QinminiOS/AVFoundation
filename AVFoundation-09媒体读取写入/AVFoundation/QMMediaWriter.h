@@ -10,7 +10,6 @@
 #import <AVFoundation/AVFoundation.h>
 
 @interface QMMediaWriter : NSObject
-
 - (instancetype)initWithOutputURL:(NSURL *)URL size:(CGSize)newSize;
 - (instancetype)initWithOutputURL:(NSURL *)URL size:(CGSize)newSize fileType:(NSString *)newFileType;
 

@@ -11,7 +11,7 @@
 @interface QMMediaReader : NSObject
 @property (nonatomic, strong) void(^videoReaderCallback)(CMSampleBufferRef videoBuffer);
 @property (nonatomic, strong) void(^audioReaderCallback)(CMSampleBufferRef audioBuffer);
-@property (nonatomic, strong) void(^readerCompleteCallback)();
+@property (nonatomic, strong) void(^readerCompleteCallback)(void);
 
 - (instancetype)initWithAsset:(AVAsset *)asset;
 - (instancetype)initWithURL:(NSURL *)url;
