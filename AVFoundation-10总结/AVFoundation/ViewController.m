@@ -11,8 +11,10 @@
 
 #define kDocumentPath(path) [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:path]
 
-@interface ViewController ()
-
+@interface ViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (nonatomic, strong) AVCaptureSession *captureSession;
+@property (nonatomic, strong) AVCaptureVideoDataOutput *videoOutput;
 @end
 
 @implementation ViewController
@@ -24,8 +26,9 @@
     UIImage *image = [UIImage imageNamed:@"1.jpg"];
     CVPixelBufferRef pixelBuffer = [QMImageHelper convertToCVPixelBufferRefFromImage:image.CGImage withSize:CGSizeMake(CGImageGetWidth(image.CGImage), CGImageGetHeight(image.CGImage))];
     
-    CGImageRef img = [QMImageHelper imageFromPixelBuffer:pixelBuffer];
-    [UIImagePNGRepresentation([UIImage imageWithCGImage:img]) writeToFile:@"/Users/qinmin/Desktop/2.png" atomically:YES];
+    CGImageRef imgRef = [QMImageHelper imageFromPixelBuffer:pixelBuffer];
+    self.imageView.image = [UIImage imageWithCGImage:imgRef];
+    
     
 }
 

@@ -228,9 +228,10 @@
     // Get information of the image
     uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0);
     
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
     size_t width = CVPixelBufferGetWidth(imageBuffer);
     size_t height = CVPixelBufferGetHeight(imageBuffer);
+    size_t bytesPerRow = 4 * width; //CVPixelBufferGetBytesPerRow(imageBuffer);
+    
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
     CGContextRef newContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
@@ -245,12 +246,12 @@
 
 + (CVPixelBufferRef)convertToCVPixelBufferRefFromImage:(CGImageRef)image withSize:(CGSize)size
 {
-    NSDictionary *options =[NSDictionary dictionaryWithObjectsAndKeys:
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
                             [NSNumber numberWithBool:YES],kCVPixelBufferCGImageCompatibilityKey,
                             [NSNumber numberWithBool:YES],kCVPixelBufferCGBitmapContextCompatibilityKey,nil];
     
     CVPixelBufferRef pxbuffer = NULL;
-    CVReturn status = CVPixelBufferCreate(kCFAllocatorDefault,size.width,size.height,kCVPixelFormatType_32BGRA,(__bridge CFDictionaryRef) options,&pxbuffer);
+    CVReturn status = CVPixelBufferCreate(kCFAllocatorDefault,size.width,size.height,kCVPixelFormatType_32BGRA,(__bridge CFDictionaryRef)options,&pxbuffer);
     
     NSParameterAssert(status == kCVReturnSuccess && pxbuffer != NULL);
     
@@ -259,7 +260,13 @@
     NSParameterAssert(pxdata != NULL);
     
     CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(pxdata,size.width,size.height,8,4*size.width,rgbColorSpace,kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little);
+    CGContextRef context = CGBitmapContextCreate(pxdata,
+                                                 size.width,
+                                                 size.height,
+                                                 8,
+                                                 4*size.width,
+                                                 rgbColorSpace,
+                                                 kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little);
     NSParameterAssert(context);
     
     CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image)), image);

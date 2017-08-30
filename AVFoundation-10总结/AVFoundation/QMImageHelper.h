@@ -47,7 +47,7 @@
 
 /**
  Create a CGImageRef from sample buffer data
- @param pixelBuffer - the BGEA CVPixelBufferRef
+ @param pixelBuffer - the CVPixelBufferRef
  @return a CGImageRef
  */
 + (CGImageRef)imageFromPixelBuffer:(CVPixelBufferRef)pixelBuffer;
